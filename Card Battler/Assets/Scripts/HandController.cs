@@ -11,14 +11,17 @@ public class HandController : MonoBehaviour
 
     public List<Vector3> cardPositions = new List<Vector3>();
 
+
     void Start()
     {
         SetCardPositionsInHand();
     }
 
+
     void Update()
     {
     }
+
 
     public void SetCardPositionsInHand()
     {
@@ -35,7 +38,10 @@ public class HandController : MonoBehaviour
         {
             cardPositions.Add(minPos.position + (distanceBetweenPoints * i));
 
-            heldCards[i].transform.position = cardPositions[i];
+            //heldCards[i].transform.position = cardPositions[i];
+            //heldCards[i].transform.rotation = minPos.transform.rotation;
+
+            heldCards[i].MoveToPoint(cardPositions[i], minPos.rotation);
         }
     }
 }

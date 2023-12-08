@@ -14,15 +14,25 @@ public class Card : MonoBehaviour
 
     public Image characterArt, bgArt;
 
+    private Vector3 targetPoint;
+
+    private Quaternion targetRot;
+
+    public float moveSpeed = 5f, rotSpeed = 540;
+
 
     void Start()
     {
         SetupCard();
     }
 
+
     void Update()
     {
+        transform.position = Vector3.Lerp(transform.position, targetPoint, moveSpeed * Time.deltaTime);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, rotSpeed * Time.deltaTime);
     }
+
 
     public void SetupCard()
     {
@@ -40,5 +50,12 @@ public class Card : MonoBehaviour
 
         characterArt.sprite = cardSO.characterSprite;
         bgArt.sprite = cardSO.bgSprite;
+    }
+
+
+    public void MoveToPoint(Vector3 pointToMoveTo, Quaternion rotToMatch)
+    {
+        targetPoint = pointToMoveTo;
+        targetRot = rotToMatch;
     }
 }
