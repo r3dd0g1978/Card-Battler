@@ -15,15 +15,23 @@ public class Card : MonoBehaviour
     public Image characterArt, bgArt;
 
     private Vector3 targetPoint;
-
     private Quaternion targetRot;
-
     public float moveSpeed = 5f, rotSpeed = 540;
+
+    public bool inHand;
+    public int handPosition;
+    private HandController theHC;
+
+    private Collider theCol;
+    private bool isSelected;
+    public LayerMask whatIsDesktop;
 
 
     void Start()
     {
         SetupCard();
+        theHC = FindObjectOfType<HandController>();
+        theCol = GetComponent<Collider>();
     }
 
 
@@ -31,6 +39,17 @@ public class Card : MonoBehaviour
     {
         transform.position = Vector3.Lerp(transform.position, targetPoint, moveSpeed * Time.deltaTime);
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, rotSpeed * Time.deltaTime);
+
+        if (isSelected)
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit, 100f, whatIsDesktop))
+            {
+                MoveToPoint(hit.point + new Vector3(0f, 2f, 0f), Quaternion.identity);
+            }
+        }
+
     }
 
 
@@ -57,5 +76,31 @@ public class Card : MonoBehaviour
     {
         targetPoint = pointToMoveTo;
         targetRot = rotToMatch;
+    }
+
+
+    private void OnMouseOver()
+    {
+        if (inHand)
+        {
+            MoveToPoint(theHC.cardPositions[handPosition] + new Vector3(0f, 0.3f, 0.5f), Quaternion.identity);
+        }
+    }
+
+    private void OnMouseExit()
+    {
+        if (inHand)
+        {
+            MoveToPoint(theHC.cardPositions[handPosition], theHC.minPos.rotation);
+        }
+    }
+
+    private void OnMouseDown()
+    {
+        if (inHand)
+        {
+            isSelected = true;
+            theCol.enabled = false;
+        }
     }
 }
