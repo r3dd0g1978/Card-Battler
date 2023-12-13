@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 public class Card : MonoBehaviour
 {
@@ -24,7 +25,11 @@ public class Card : MonoBehaviour
 
     private Collider theCol;
     private bool isSelected;
-    public LayerMask whatIsDesktop;
+    public LayerMask whatIsDesktop, whatIsPlacement;
+
+    private bool justPressed;
+
+    public CardPlacePoint assignedPlace;
 
 
     void Start()
@@ -44,11 +49,49 @@ public class Card : MonoBehaviour
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
+
             if (Physics.Raycast(ray, out hit, 100f, whatIsDesktop))
             {
                 MoveToPoint(hit.point + new Vector3(0f, 2f, 0f), Quaternion.identity);
             }
+
+            if (Input.GetMouseButtonDown(1))
+            {
+                ReturnToHand();
+            }
+
+            if (Input.GetMouseButtonDown(0) && justPressed == false)
+            {
+                if (Physics.Raycast(ray, out hit, 100f, whatIsPlacement))
+                {
+                    CardPlacePoint selectedPoint = hit.collider.GetComponent<CardPlacePoint>();
+
+                    if (selectedPoint.activeCard == null && selectedPoint.isPlayerPoint)
+                    {
+                        selectedPoint.activeCard = this;
+                        assignedPlace = selectedPoint;
+
+                        MoveToPoint(selectedPoint.transform.position, Quaternion.identity);
+
+                        inHand = false;
+
+                        isSelected = false;
+
+                    }
+                    else
+                    {
+                        ReturnToHand();
+                    }
+
+                }
+                else
+                {
+                    ReturnToHand();
+                }
+            }
         }
+
+        justPressed = false;
 
     }
 
@@ -92,6 +135,7 @@ public class Card : MonoBehaviour
         if (inHand)
         {
             MoveToPoint(theHC.cardPositions[handPosition], theHC.minPos.rotation);
+
         }
     }
 
@@ -101,6 +145,16 @@ public class Card : MonoBehaviour
         {
             isSelected = true;
             theCol.enabled = false;
+
+            justPressed = true;
         }
+    }
+
+    public void ReturnToHand()
+    {
+        isSelected = false;
+        theCol.enabled = true;
+
+        MoveToPoint(theHC.cardPositions[handPosition], theHC.minPos.transform.rotation);
     }
 }
