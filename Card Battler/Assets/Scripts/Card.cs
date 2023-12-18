@@ -77,6 +77,8 @@ public class Card : MonoBehaviour
 
                         isSelected = false;
 
+                        theHC.RemoveCardFromHand(this);
+
                     }
                     else
                     {
