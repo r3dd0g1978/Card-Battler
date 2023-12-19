@@ -20,7 +20,8 @@ public class BattleController : MonoBehaviour
 
     void Start()
     {
-        playerMana = startingMana;   
+        playerMana = startingMana;
+        UIController.instance.SetPlayerManaText(playerMana);
     }
 
 
@@ -37,5 +38,7 @@ public class BattleController : MonoBehaviour
         {
             playerMana = 0;
         }
+
+        UIController.instance.SetPlayerManaText(playerMana);
     }
 }
